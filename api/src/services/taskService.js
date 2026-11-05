@@ -154,6 +154,8 @@ async function deleteTask(task) {
   await Promise.all([
     TaskShare.deleteMany({ taskId: task._id }),
     TaskActivity.deleteMany({ taskId: task._id }),
+    require('../models/Notification').deleteMany({ taskId: task._id }),
+    require('../models/EmailLog').deleteMany({ taskId: task._id }),
   ]);
   await task.deleteOne();
 }

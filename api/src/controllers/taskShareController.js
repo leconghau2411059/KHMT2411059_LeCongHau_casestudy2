@@ -2,7 +2,14 @@ const AppError = require('../utils/AppError');
 const TaskShare = require('../models/TaskShare');
 const assignmentService = require('../services/assignmentService');
 const taskService = require('../services/taskService');
-const { ACTIVITY } = require('../utils/constants');
+const notificationService = require('../services/notificationService');
+const { ACTIVITY, EVENT } = require('../utils/constants');
+
+const PERM_TEXT = { viewer: 'chỉ xem', editor: 'được phép sửa' };
+const notifyShare = (req, userId, type, message) =>
+  notificationService.dispatch({
+    task: req.task, actor: req.user, recipientIds: [userId], type, message,
+  });
 const { publicUser, idOf } = require('../utils/serializers');
 
 const POPULATE = [
@@ -50,6 +57,7 @@ async function create(req, res) {
       await taskService.logActivity(req.task._id, req.user._id, ACTIVITY.SHARE_UPDATED, {
         userId: idOf(target), permission,
       });
+      await notifyShare(req, idOf(target), EVENT.SHARE_UPDATED, `Quyền mới của bạn: ${PERM_TEXT[permission]}.`);
     }
     share = existing;
   } else {
@@ -60,6 +68,7 @@ async function create(req, res) {
     await taskService.logActivity(req.task._id, req.user._id, ACTIVITY.SHARED, {
       userId: idOf(target), fullName: target.fullName, permission,
     });
+    await notifyShare(req, idOf(target), EVENT.TASK_SHARED, `Quyền của bạn: ${PERM_TEXT[permission]}.`);
   }
 
   res.status(created ? 201 : 200).json({
@@ -83,6 +92,7 @@ async function update(req, res) {
     await taskService.logActivity(req.task._id, req.user._id, ACTIVITY.SHARE_UPDATED, {
       userId: idOf(share.userId), permission: share.permission,
     });
+    await notifyShare(req, idOf(share.userId), EVENT.SHARE_UPDATED, `Quyền mới của bạn: ${PERM_TEXT[share.permission]}.`);
   }
   res.json({ message: 'Đã cập nhật quyền truy cập', share: shareView(await loadShare(share._id)) });
 }
@@ -94,6 +104,7 @@ async function remove(req, res) {
   await taskService.logActivity(req.task._id, req.user._id, ACTIVITY.SHARE_REVOKED, {
     userId: idOf(share.userId),
   });
+  await notifyShare(req, idOf(share.userId), EVENT.SHARE_REVOKED, 'Bạn không còn truy cập được công việc này.');
   res.json({ message: 'Đã thu hồi quyền truy cập' });
 }
 

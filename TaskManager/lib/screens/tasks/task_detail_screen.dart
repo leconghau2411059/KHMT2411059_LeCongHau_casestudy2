@@ -11,6 +11,7 @@ import '../../widgets/priority_badge.dart';
 import '../../widgets/status_badge.dart';
 import '../assignment/assign_task_screen.dart';
 import '../sharing/task_sharing_screen.dart';
+import 'email_log_screen.dart';
 import 'task_edit_screen.dart';
 
 /// Màn hình 4: Chi tiết công việc.
@@ -285,6 +286,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             icon: const Icon(Icons.share_outlined),
             label: const Text('Chia sẻ'),
           ),
+        ),
+        const SizedBox(width: 12),
+        IconButton.outlined(
+          tooltip: 'Nhật ký email',
+          onPressed: () => _openManage(EmailLogScreen(taskId: task.id)),
+          icon: const Icon(Icons.mail_outline),
         ),
       ],
     );

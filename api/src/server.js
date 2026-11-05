@@ -1,6 +1,7 @@
 const { config, assertRequired } = require('./config/env');
 const { connectDatabase } = require('./config/database');
 const app = require('./app');
+const { startReminderJob } = require('./services/reminderService');
 
 async function main() {
   assertRequired();
@@ -8,6 +9,7 @@ async function main() {
 
   app.listen(config.port, () => {
     console.log(`Server đang chạy tại http://localhost:${config.port}/api`);
+    startReminderJob();
   });
 }
 

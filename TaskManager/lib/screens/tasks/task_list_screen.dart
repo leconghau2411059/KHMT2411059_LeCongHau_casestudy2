@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 
 import '../../models/task.dart';
 import '../../services/api_client.dart';
+import '../../services/notification_service.dart';
 import '../../services/task_service.dart';
 import '../../utils/constants.dart';
 import '../../widgets/loading_view.dart';
 import '../../widgets/task_card.dart';
+import '../notifications/notification_screen.dart';
 import '../profile/profile_screen.dart';
 import 'task_create_screen.dart';
 import 'task_detail_screen.dart';
@@ -39,11 +41,30 @@ class _TaskListScreenState extends State<TaskListScreen> {
   bool _loading = true;
   bool _loadingMore = false;
   String? _error;
+  int _unread = 0;
 
   @override
   void initState() {
     super.initState();
     _load();
+    _loadUnread();
+  }
+
+  Future<void> _loadUnread() async {
+    try {
+      final count = await NotificationService.instance.unreadCount();
+      if (mounted) setState(() => _unread = count);
+    } on ApiException {
+      // Lỗi đếm thông báo không ảnh hưởng danh sách công việc.
+    }
+  }
+
+  Future<void> _openNotifications() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NotificationScreen()),
+    );
+    if (mounted) _loadUnread();
   }
 
   @override
@@ -126,7 +147,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
       context,
       MaterialPageRoute(builder: (_) => TaskDetailScreen(taskId: task.id)),
     );
-    if (mounted) _load();
+    if (mounted) {
+      _load();
+      _loadUnread();
+    }
   }
 
   Future<void> _openCreate() async {
@@ -155,6 +179,15 @@ class _TaskListScreenState extends State<TaskListScreen> {
             ),
             tooltip: 'Lọc và sắp xếp',
             onPressed: _openFilters,
+          ),
+          IconButton(
+            icon: Badge(
+              isLabelVisible: _unread > 0,
+              label: Text(_unread > 99 ? '99+' : '$_unread'),
+              child: const Icon(Icons.notifications_outlined),
+            ),
+            tooltip: 'Thông báo',
+            onPressed: _openNotifications,
           ),
           IconButton(
             icon: const Icon(Icons.person_outline),

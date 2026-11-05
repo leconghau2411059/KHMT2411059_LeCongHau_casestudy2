@@ -1,6 +1,7 @@
 const Task = require('../models/Task');
 const TaskActivity = require('../models/TaskActivity');
 const taskService = require('../services/taskService');
+const notificationService = require('../services/notificationService');
 const { ACTIVITY } = require('../utils/constants');
 const { taskView, activityView } = require('../utils/serializers');
 
@@ -40,7 +41,8 @@ async function get(req, res) {
 
 // PUT /tasks/:id
 async function update(req, res) {
-  await taskService.applyChanges(req.task, req.valid, req.user._id);
+  const { diff } = await taskService.applyChanges(req.task, req.valid, req.user._id);
+  await notificationService.notifyTaskChanges(req.task, diff, req.user);
   res.json({
     message: 'Cập nhật công việc thành công',
     task: await taskService.presentTask(req.task._id, req.user._id),
@@ -49,7 +51,8 @@ async function update(req, res) {
 
 // PATCH /tasks/:id/status
 async function updateStatus(req, res) {
-  await taskService.applyChanges(req.task, { status: req.valid.status }, req.user._id);
+  const { diff } = await taskService.applyChanges(req.task, { status: req.valid.status }, req.user._id);
+  await notificationService.notifyTaskChanges(req.task, diff, req.user);
   res.json({
     message: 'Cập nhật trạng thái thành công',
     task: await taskService.presentTask(req.task._id, req.user._id),

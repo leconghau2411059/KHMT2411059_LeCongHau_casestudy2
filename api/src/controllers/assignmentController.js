@@ -2,6 +2,8 @@ const AppError = require('../utils/AppError');
 const User = require('../models/User');
 const assignmentService = require('../services/assignmentService');
 const taskService = require('../services/taskService');
+const notificationService = require('../services/notificationService');
+const { EVENT } = require('../utils/constants');
 const { publicUser, idOf } = require('../utils/serializers');
 
 const assigneeView = (u) => ({ ...publicUser(u), isPrimary: Boolean(u.isPrimary) });
@@ -29,6 +31,14 @@ async function assign(req, res) {
 
   const result = await assignmentService.addAssignees(req.task, users, req.user._id, primaryUserId);
   const assignees = await assignmentService.listAssignees(req.task._id);
+
+  await notificationService.dispatch({
+    task: req.task,
+    actor: req.user,
+    recipientIds: result.added.map(idOf),
+    type: EVENT.TASK_ASSIGNED,
+    message: 'Bạn vừa được giao công việc này.',
+  });
 
   res.status(201).json({
     message: result.added.length > 0 ? 'Giao việc thành công' : 'Những người này đã được giao trước đó',
@@ -65,6 +75,13 @@ async function remove(req, res) {
   const userId = await requireAssignee(req);
   const removed = await User.findById(userId).select('fullName email avatarUrl').lean();
   await assignmentService.removeAssignee(req.task, userId, req.user._id);
+  await notificationService.dispatch({
+    task: req.task,
+    actor: req.user,
+    recipientIds: [userId],
+    type: EVENT.TASK_UNASSIGNED,
+    message: 'Bạn đã được gỡ khỏi công việc này.',
+  });
   res.json({
     message: 'Đã gỡ người phụ trách',
     removed: publicUser(removed) || { id: userId },

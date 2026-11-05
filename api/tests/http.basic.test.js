@@ -71,3 +71,17 @@ test('API giao việc và chia sẻ yêu cầu đăng nhập → 401', async () 
     assert.equal(r.status, 401, `${method} ${path}`);
   }
 });
+
+test('API thông báo và email-log yêu cầu đăng nhập → 401', async () => {
+  const id = '64b7f0c2a1b2c3d4e5f60718';
+  for (const [method, path] of [
+    ['GET', '/notifications'],
+    ['GET', '/notifications/unread-count'],
+    ['PATCH', '/notifications/read-all'],
+    ['PATCH', `/notifications/${id}/read`],
+    ['GET', `/tasks/${id}/email-logs`],
+    ['POST', `/email-logs/${id}/retry`],
+  ]) {
+    assert.equal((await call(base, method, path)).status, 401, `${method} ${path}`);
+  }
+});

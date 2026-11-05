@@ -5,6 +5,7 @@ const { requireTaskAccess } = require('../middleware/permissionMiddleware');
 const { validate, validateObjectIdParams } = require('../middleware/validateMiddleware');
 const validators = require('../validators/taskValidator');
 const assignmentRoutes = require('./assignmentRoutes');
+const emailLogController = require('../controllers/emailLogController');
 const taskShareRoutes = require('./taskShareRoutes');
 
 const router = express.Router();
@@ -34,6 +35,7 @@ router.patch(
 );
 router.get('/:id/activities', withId, requireTaskAccess('view'), controller.activities);
 
+router.get('/:id/email-logs', withId, requireTaskAccess('manage'), emailLogController.listForTask);
 router.use('/:id/assignees', assignmentRoutes);
 router.use('/:id/shares', taskShareRoutes);
 
