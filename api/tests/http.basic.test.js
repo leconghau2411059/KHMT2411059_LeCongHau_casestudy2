@@ -56,3 +56,18 @@ test('đường dẫn không tồn tại → 404', async () => {
   const r = await call(base, 'GET', '/khong-co');
   assert.equal(r.status, 404);
 });
+
+test('API giao việc và chia sẻ yêu cầu đăng nhập → 401', async () => {
+  const id = '64b7f0c2a1b2c3d4e5f60718';
+  for (const [method, path] of [
+    ['GET', `/tasks/${id}/assignees`],
+    ['POST', `/tasks/${id}/assignees`],
+    ['DELETE', `/tasks/${id}/assignees/${id}`],
+    ['GET', `/tasks/${id}/shares`],
+    ['POST', `/tasks/${id}/shares`],
+    ['PATCH', `/tasks/${id}/shares/${id}`],
+  ]) {
+    const r = await call(base, method, path);
+    assert.equal(r.status, 401, `${method} ${path}`);
+  }
+});

@@ -4,6 +4,8 @@ const { authenticate } = require('../middleware/authMiddleware');
 const { requireTaskAccess } = require('../middleware/permissionMiddleware');
 const { validate, validateObjectIdParams } = require('../middleware/validateMiddleware');
 const validators = require('../validators/taskValidator');
+const assignmentRoutes = require('./assignmentRoutes');
+const taskShareRoutes = require('./taskShareRoutes');
 
 const router = express.Router();
 
@@ -31,5 +33,8 @@ router.patch(
   controller.updateStatus
 );
 router.get('/:id/activities', withId, requireTaskAccess('view'), controller.activities);
+
+router.use('/:id/assignees', assignmentRoutes);
+router.use('/:id/shares', taskShareRoutes);
 
 module.exports = router;

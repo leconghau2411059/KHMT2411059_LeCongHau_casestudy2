@@ -9,6 +9,8 @@ import '../../utils/date_formatter.dart';
 import '../../widgets/loading_view.dart';
 import '../../widgets/priority_badge.dart';
 import '../../widgets/status_badge.dart';
+import '../assignment/assign_task_screen.dart';
+import '../sharing/task_sharing_screen.dart';
 import 'task_edit_screen.dart';
 
 /// Màn hình 4: Chi tiết công việc.
@@ -86,6 +88,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     if (changed == true) _load();
   }
 
+  Future<void> _openManage(Widget screen) async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+    if (mounted) _load();
+  }
+
   Future<void> _delete() async {
     final task = _task;
     if (task == null) return;
@@ -151,6 +158,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           _buildPeopleCard(task),
           const SizedBox(height: 12),
           _buildStatusCard(task),
+          if (task.canManage) ...[
+            const SizedBox(height: 12),
+            _buildManageCard(task),
+          ],
         ],
       ),
     );
@@ -254,6 +265,28 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return Chip(
       avatar: isPrimary ? const Icon(Icons.star, size: 16, color: AppColors.warning) : null,
       label: Text(user.fullName),
+    );
+  }
+
+  Widget _buildManageCard(Task task) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () => _openManage(AssignTaskScreen(task: task)),
+            icon: const Icon(Icons.group_add_outlined),
+            label: const Text('Giao việc'),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () => _openManage(TaskSharingScreen(task: task)),
+            icon: const Icon(Icons.share_outlined),
+            label: const Text('Chia sẻ'),
+          ),
+        ),
+      ],
     );
   }
 
