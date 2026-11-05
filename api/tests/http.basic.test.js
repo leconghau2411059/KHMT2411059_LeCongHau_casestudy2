@@ -18,7 +18,7 @@ test('GET /health trả về ok', async () => {
 });
 
 test('API riêng tư không có token → 401', async () => {
-  for (const path of ['/auth/me', '/users/search?q=ab']) {
+  for (const path of ['/auth/me', '/users/search?q=ab', '/tasks', '/tasks/65f000000000000000000001']) {
     const r = await call(base, 'GET', path);
     assert.equal(r.status, 401, path);
   }

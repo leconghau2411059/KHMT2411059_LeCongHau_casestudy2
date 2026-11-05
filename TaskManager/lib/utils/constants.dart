@@ -31,3 +31,68 @@ class AppColors {
   static const Color success = Color(0xFF2E9E3E);
   static const Color warning = Color(0xFFF59E0B);
 }
+
+/// Nhãn và màu cho trạng thái, mức ưu tiên, vai trò của công việc.
+class TaskOptions {
+  TaskOptions._();
+
+  static const List<String> statuses = ['todo', 'in_progress', 'completed'];
+  static const List<String> priorities = ['low', 'medium', 'high'];
+
+  static String statusLabel(String status) {
+    switch (status) {
+      case 'in_progress':
+        return 'Đang thực hiện';
+      case 'completed':
+        return 'Đã hoàn thành';
+      default:
+        return 'Chưa thực hiện';
+    }
+  }
+
+  static Color statusColor(String status) {
+    switch (status) {
+      case 'in_progress':
+        return AppColors.primary;
+      case 'completed':
+        return AppColors.success;
+      default:
+        return AppColors.textGrey;
+    }
+  }
+
+  static String priorityLabel(String priority) {
+    switch (priority) {
+      case 'low':
+        return 'Thấp';
+      case 'high':
+        return 'Cao';
+      default:
+        return 'Trung bình';
+    }
+  }
+
+  static Color priorityColor(String priority) {
+    switch (priority) {
+      case 'low':
+        return const Color(0xFF64748B);
+      case 'high':
+        return AppColors.danger;
+      default:
+        return AppColors.warning;
+    }
+  }
+
+  static String roleLabel(String? role) {
+    switch (role) {
+      case 'owner':
+        return 'Người tạo';
+      case 'editor':
+        return 'Được phép sửa';
+      case 'viewer':
+        return 'Chỉ xem';
+      default:
+        return '';
+    }
+  }
+}
