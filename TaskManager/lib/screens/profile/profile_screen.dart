@@ -5,8 +5,9 @@ import '../../services/api_client.dart';
 import '../../services/auth_service.dart';
 import '../../utils/constants.dart';
 import '../../utils/validators.dart';
+import '../../widgets/statistics_section.dart';
 
-/// Màn hình 10: Cá nhân (hồ sơ, đổi mật khẩu, đăng xuất). Phần thống kê được thêm ở nhánh E.
+/// Màn hình 10: Cá nhân và thống kê (hồ sơ, đổi mật khẩu, đăng xuất, thống kê công việc).
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -68,6 +69,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.all(16),
             children: [
               _buildHeader(user),
+              const SizedBox(height: 16),
+              const StatisticsSection(),
               const SizedBox(height: 16),
               Card(
                 child: Column(

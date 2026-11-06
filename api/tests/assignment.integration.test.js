@@ -133,3 +133,25 @@ test('không chia sẻ cho chính người tạo; người lạ không truy cậ
   assert.equal(self.status, 400);
   assert.equal((await call(base, 'GET', `/tasks/${id}`, { token: stranger.token })).status, 404);
 });
+
+test('thống kê chỉ tính công việc có quyền truy cập', opts, async () => {
+  const mk = (token, title, extra = {}) => call(base, 'POST', '/tasks', { token, body: { title, ...extra } });
+  const soon = new Date(Date.now() + 2 * 86400000).toISOString();
+  const past = new Date(Date.now() - 86400000).toISOString();
+  const a = (await mk(owner.token, 'S1', { dueDate: soon })).body.task.id;
+  await mk(owner.token, 'S2', { dueDate: past });
+  await mk(stranger.token, 'Không liên quan');
+  await call(base, 'POST', `/tasks/${a}/assignees`, { token: owner.token, body: { userIds: [bob.user.id] } });
+
+  const ownerStats = await call(base, 'GET', '/statistics/tasks', { token: owner.token });
+  assert.ok(ownerStats.body.statistics.total >= 2);
+  const bobStats = await call(base, 'GET', '/statistics/tasks', { token: bob.token });
+  assert.equal(bobStats.body.statistics.total, 1);
+
+  const asg = await call(base, 'GET', '/statistics/assignments', { token: bob.token });
+  assert.equal(asg.body.statistics.assigned, 1);
+  assert.equal(asg.body.statistics.primaryResponsible, 1);
+
+  const dl = await call(base, 'GET', '/statistics/deadlines?days=7', { token: owner.token });
+  assert.ok(dl.body.upcomingCount >= 1 && dl.body.overdueCount >= 1);
+});

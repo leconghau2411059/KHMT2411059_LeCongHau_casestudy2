@@ -85,3 +85,9 @@ test('API thông báo và email-log yêu cầu đăng nhập → 401', async () 
     assert.equal((await call(base, method, path)).status, 401, `${method} ${path}`);
   }
 });
+
+test('API thống kê yêu cầu đăng nhập → 401', async () => {
+  for (const p of ['/statistics/tasks', '/statistics/assignments', '/statistics/deadlines']) {
+    assert.equal((await call(base, 'GET', p)).status, 401, p);
+  }
+});

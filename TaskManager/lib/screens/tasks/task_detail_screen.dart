@@ -6,6 +6,7 @@ import '../../services/api_client.dart';
 import '../../services/task_service.dart';
 import '../../utils/constants.dart';
 import '../../utils/date_formatter.dart';
+import '../../widgets/activity_history.dart';
 import '../../widgets/loading_view.dart';
 import '../../widgets/priority_badge.dart';
 import '../../widgets/status_badge.dart';
@@ -30,6 +31,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Task? _task;
   bool _loading = true;
   bool _busy = false;
+  int _version = 0; // tăng mỗi khi dữ liệu thay đổi để tải lại lịch sử
   String? _error;
 
   @override
@@ -49,6 +51,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       setState(() {
         _task = task;
         _loading = false;
+        _version++;
       });
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -70,7 +73,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     try {
       final updated = await _service.updateStatus(task.id, status);
       if (!mounted) return;
-      setState(() => _task = updated);
+      setState(() {
+        _task = updated;
+        _version++;
+      });
       _toast('Đã chuyển sang "${TaskOptions.statusLabel(status)}"');
     } on ApiException catch (e) {
       if (mounted) _toast(e.message);
@@ -163,6 +169,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             const SizedBox(height: 12),
             _buildManageCard(task),
           ],
+          const SizedBox(height: 12),
+          _card(ActivityHistory(taskId: task.id, reloadKey: _version)),
         ],
       ),
     );

@@ -7,6 +7,7 @@ const userRoutes = require('./routes/userRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const emailLogRoutes = require('./routes/emailLogRoutes');
+const statisticsRoutes = require('./routes/statisticsRoutes');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/email-logs', emailLogRoutes);
+app.use('/api/statistics', statisticsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
