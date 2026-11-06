@@ -55,6 +55,7 @@ class _TaskSharingScreenState extends State<TaskSharingScreen> {
   }
 
   void _toast(String text) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 

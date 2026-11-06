@@ -42,6 +42,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
   bool _loadingMore = false;
   String? _error;
   int _unread = 0;
+  int _requestId = 0; // bỏ qua kết quả của lần tải cũ khi có nhiều lần tải chồng nhau
 
   @override
   void initState() {
@@ -79,9 +80,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
       _loading = _tasks.isEmpty;
       _error = null;
     });
+    final requestId = ++_requestId;
     try {
       final result = await _service.list(_query);
-      if (!mounted) return;
+      if (!mounted || requestId != _requestId) return;
       setState(() {
         _tasks = result.tasks;
         _total = result.total;
@@ -89,7 +91,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
         _loading = false;
       });
     } on ApiException catch (e) {
-      if (!mounted) return;
+      if (!mounted || requestId != _requestId) return;
       setState(() {
         _error = e.message;
         _loading = false;
@@ -101,8 +103,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
     if (_loadingMore) return;
     setState(() => _loadingMore = true);
     try {
+      final requestId = _requestId;
       final result = await _service.list(_query, page: _page + 1);
-      if (!mounted) return;
+      if (!mounted || requestId != _requestId) return;
       setState(() {
         _tasks = [..._tasks, ...result.tasks];
         _total = result.total;

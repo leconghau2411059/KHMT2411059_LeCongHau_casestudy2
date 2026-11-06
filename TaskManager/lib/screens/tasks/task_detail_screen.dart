@@ -63,6 +63,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 
   void _toast(String text) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
