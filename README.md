@@ -44,3 +44,11 @@ Máy ảo Android gọi tới máy tính qua `10.0.2.2` (đã cấu hình sẵn)
 | `c-giao-viec-chia-se` | C. Giao việc và chia sẻ |
 | `d-thong-bao-email` | D. Thông báo qua email và trong ứng dụng |
 | `e-thong-ke` | E. Thống kê và tiện ích |
+
+Nhánh `main` giống nhánh `e-thong-ke` (bản hoàn chỉnh, gồm A–E).
+
+## Tài liệu và kiểm thử
+
+- Chi tiết API, phân quyền, email và cách chạy test: xem [`api/README.md`](api/README.md).
+- Cấu hình bí mật (JWT, MongoDB, SMTP) nằm trong `api/.env` (không commit); mẫu ở `api/.env.example`.
+- 10 màn hình Flutter: Đăng nhập, Đăng ký, Danh sách việc, Chi tiết, Thêm, Sửa, Giao việc, Chia sẻ và phân quyền, Thông báo, Cá nhân và thống kê.
