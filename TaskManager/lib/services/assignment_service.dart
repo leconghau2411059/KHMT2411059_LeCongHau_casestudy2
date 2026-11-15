@@ -33,7 +33,7 @@ class AssignmentService {
   Future<AssignResult> assign(String taskId, List<User> users, {String? primaryUserId}) async {
     final data = await _api.post('/tasks/$taskId/assignees', body: {
       'userIds': users.map((u) => u.id).toList(),
-      if (primaryUserId != null) 'primaryUserId': primaryUserId,
+      'primaryUserId': ?primaryUserId,
     });
     return AssignResult(
       assignees: _parse(data['assignees']),

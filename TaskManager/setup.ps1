@@ -10,6 +10,9 @@ $ErrorActionPreference = 'Stop'
 
 flutter create --project-name task_manager --org com.example --platforms android,ios,web,windows .
 
+# flutter create sinh ra test mẫu tham chiếu class MyApp (không tồn tại trong dự án này) nên xóa đi.
+Remove-Item -Force -ErrorAction SilentlyContinue (Join-Path (Get-Location) 'test\widget_test.dart')
+
 $manifest = Join-Path (Get-Location) 'android\app\src\main\AndroidManifest.xml'
 $text = [System.IO.File]::ReadAllText($manifest)
 
